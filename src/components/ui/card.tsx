@@ -1,11 +1,22 @@
-import { ReactNode } from "react";
+import { ReactNode, HTMLAttributes } from "react";
 
-export function Card({ children }: { children: ReactNode }) {
-  return <div className="bg-white rounded-2xl p-4">{children}</div>;
+type CardProps = HTMLAttributes<HTMLDivElement> & {
+  children: ReactNode;
+};
+
+export function Card({ children, className = "", ...rest }: CardProps) {
+  return (
+    <div className={`bg-white rounded-2xl p-4 ${className}`} {...rest}>
+      {children}
+    </div>
+  );
 }
 
-export function CardContent({ children }: { children: ReactNode }) {
-  return <div>{children}</div>;
+export function CardContent({ children, className = "", ...rest }: CardProps) {
+  return (
+    <div className={className} {...rest}>
+      {children}
+    </div>
+  );
 }
-
 
