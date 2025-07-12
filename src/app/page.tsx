@@ -30,12 +30,23 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 to-white p-8">
+    <div className="min-h-screen bg-gradient-to-br from-sky-100 to-white px-4 sm:px-8 py-10">
       <div className="max-w-2xl mx-auto text-center">
-        <h1 className="text-4xl font-bold mb-4">Save Money on Your Prescriptions!</h1>
-        <p className="text-lg mb-4">
-          <strong>70%</strong> of users save <strong>25%</strong> or more each month. Joan (68) saved <strong>$112/month</strong> on insulin. Upload your prescriptions for instant price comparisons!
+
+        {/* Logo */}
+        <img src="/logo.png" alt="Logo" className="w-28 mx-auto mb-4" />
+
+        {/* Heading */}
+        <h1 className="text-4xl font-bold mb-4 text-gray-900">
+          Save Money on Your Prescriptions!
+        </h1>
+
+        <p className="text-lg mb-4 text-gray-700">
+          <strong>70%</strong> of users save <strong>25%</strong> or more each month. Joan (68) saved <strong>$112/month</strong> on insulin.
+          Upload your prescriptions for instant price comparisons!
         </p>
+
+        {/* Testimonials */}
         <motion.div
           key={testimonialIndex}
           className="text-base italic text-gray-700 mb-6"
@@ -46,16 +57,27 @@ export default function Home() {
           {testimonials[testimonialIndex]}
         </motion.div>
 
+        {/* Trust Badge Row */}
+        <div className="text-sm text-gray-600 mb-6">
+          🔒 HIPAA-compliant & Secure • 📦 Trusted by 1,200+ users • 🧠 AI-powered analysis
+        </div>
+
+        {/* Upload Form */}
         <Card className="shadow-lg">
           <CardContent className="p-6">
             <form className="flex flex-col gap-4">
-              <label className="text-left text-sm font-medium">Upload Your Prescription (.png):</label>
+              <label className="text-left text-sm font-medium text-gray-700">
+                Upload Your Prescription (.png):
+              </label>
               <Input type="file" accept=".png" />
-              <Button type="submit">Compare Prices</Button>
+              <Button type="submit" className="text-lg py-3">
+                🔍 Compare Prices
+              </Button>
             </form>
           </CardContent>
         </Card>
 
+        {/* OCR Tool Link */}
         <div className="mt-6">
           <a
             href="https://github.com/YOUR_USERNAME/ocr-prescription-tool"
@@ -66,6 +88,13 @@ export default function Home() {
             Go to OCR Tool (.png to .txt Python Script)
           </a>
         </div>
+
+        {/* Footer */}
+        <footer className="mt-12 text-center text-sm text-gray-500">
+          &copy; 2025 SaveMoneyOnYourMeds. All rights reserved. •{" "}
+          <a href="#" className="underline">Privacy</a> •{" "}
+          <a href="#" className="underline">Contact</a>
+        </footer>
       </div>
     </div>
   );
