@@ -31,7 +31,7 @@ export default function Home() {
   }, []);
 
   const handleOCR = async () => {
-    console.log("🧠 OCR button clicked"); // ✅ Added this line
+    console.log("🧠 OCR button clicked");
 
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (!fileInput?.files?.[0]) {
@@ -45,6 +45,8 @@ export default function Home() {
     reader.onload = async () => {
       const base64 = (reader.result as string).split(",")[1];
 
+      console.log("📸 Image base64 starts with:", base64.substring(0, 30));
+
       try {
         const res = await fetch("/api/ocr", {
           method: "POST",
@@ -54,9 +56,9 @@ export default function Home() {
 
         const json = await res.json();
 
-        if (res.ok) {
-          console.log("OCR response:", json); // ✅ Added this line
+        console.log("🧾 OCR response:", json);
 
+        if (res.ok) {
           if (json.text?.trim()) {
             alert("🎉 Congratulations! Your file was converted to text:\n\n" + json.text);
           } else {
