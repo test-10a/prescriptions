@@ -67,7 +67,8 @@ export default function Home() {
         } else {
           alert("❌ Error: " + json.error);
         }
-      } catch {
+      } catch (err) {
+        console.error("❌ Fetch error:", err);
         alert("❌ Failed to reach the OCR API.");
       }
     };
