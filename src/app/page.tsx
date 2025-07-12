@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Tesseract from "tesseract.js"; // ✅ Added for client-side OCR
+import Tesseract from "tesseract.js"; // ✅ OCR library
 
 const testimonials = [
   "John (52): This website has helped me save 30% on my monthly prescription costs!",
@@ -48,11 +48,29 @@ export default function Home() {
         logger: m => console.log("🪵 Progress:", m),
       });
 
-      console.log("🧾 OCR result:", result.data.text);
-      alert("🎉 OCR result:\n\n" + result.data.text);
+      const extractedText = result.data.text;
+      console.log("🧾 OCR result:", extractedText);
+
+      alert("🎉 OCR result:\n\n" + extractedText);
+
+      // 📨 Send to external API
+      console.log("📡 Sending text to endpoint...");
+      const response = await fetch("https://us-central1-zawya-83b19.cloudfunctions.net/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: extractedText }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API responded with status ${response.status}`);
+      }
+
+      console.log("✅ Text sent successfully");
     } catch (err) {
-      console.error("❌ OCR failed:", err);
-      alert("❌ OCR failed. See console for details.");
+      console.error("❌ OCR or submission failed:", err);
+      alert("❌ Something went wrong. See console for details.");
     }
   };
 
