@@ -1,4 +1,5 @@
-export const runtime = "nodejs";          // full Node runtime
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export const runtime = "nodejs";          // use full Node runtime
 
 import { NextRequest, NextResponse } from "next/server";
 import { createWorker, type WorkerParams } from "tesseract.js";
@@ -12,14 +13,11 @@ type WorkerOpts = Partial<WorkerParams> & {
 const workerPromise = (async () => {
   const opts: WorkerOpts = {
     corePath: "/tesseract-core-simd.wasm",   // WASM served from /public
-    logger: m => console.log("🪵", m),       // progress in Vercel logs
+    logger: m => console.log("🪵", m),
   };
 
-  // cast because outdated d.ts accepts only strings
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const worker: any = await createWorker(opts as any);
-
-  await worker.loadLanguage("eng");          // worker is 'any', so TS allows this
+  const worker: any = await createWorker(opts as any); // cast—types are old
+  await worker.loadLanguage("eng");
   await worker.initialize("eng");
   return worker;
 })();
@@ -35,15 +33,15 @@ export async function POST(req: NextRequest) {
     }
 
     const buffer = Buffer.from(imageBase64, "base64");
-    const worker: any = await workerPromise;            // reuse across warm calls
+    const worker: any = await workerPromise;        // reuse when warm
     const { data } = await worker.recognize(buffer);
 
     console.log("✅ Extracted text:", data.text.trim().slice(0, 60));
     return NextResponse.json({ text: data.text });
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("❌ OCR error:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("❌ OCR error:", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 
