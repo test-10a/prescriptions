@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
+import Image from "next/image"; // ✅ added
 
 const testimonials = [
   "John (52): This website has helped me save 30% on my monthly prescription costs!",
@@ -56,7 +57,7 @@ export default function Home() {
         } else {
           alert("❌ Error: " + json.error);
         }
-      } catch (err) {
+      } catch {
         alert("❌ Failed to reach the OCR API.");
       }
     };
@@ -68,8 +69,14 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-sky-100 to-white px-4 sm:px-8 py-10">
       <div className="max-w-2xl mx-auto text-center">
 
-        {/* Logo */}
-        <img src="/logo.png" alt="Logo" className="w-28 mx-auto mb-4" />
+        {/* Logo - now using optimized <Image /> */}
+        <Image
+          src="/logo.png"
+          alt="Logo"
+          width={112}
+          height={112}
+          className="mx-auto mb-4"
+        />
 
         {/* Heading */}
         <h1 className="text-4xl font-bold mb-4 text-gray-900">
