@@ -31,6 +31,8 @@ export default function Home() {
   }, []);
 
   const handleOCR = async () => {
+    console.log("🧠 OCR button clicked"); // ✅ Added this line
+
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (!fileInput?.files?.[0]) {
       alert("Please upload a .png file first.");
@@ -53,7 +55,7 @@ export default function Home() {
         const json = await res.json();
 
         if (res.ok) {
-          console.log("OCR response:", json); // 🔍 add this line
+          console.log("OCR response:", json); // ✅ Added this line
 
           if (json.text?.trim()) {
             alert("🎉 Congratulations! Your file was converted to text:\n\n" + json.text);
