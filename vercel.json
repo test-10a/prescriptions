@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/ocr/index.py": {
+      "runtime": "python3.9"
+    }
+  }
+}
+
