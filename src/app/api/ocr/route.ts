@@ -11,14 +11,15 @@ type WorkerOpts = Partial<WorkerParams> & {
 
 const workerPromise = (async () => {
   const opts: WorkerOpts = {
-    corePath: "/tesseract-core-simd.wasm",   // served from /public
-    logger: m => console.log("🪵", m),
+    corePath: "/tesseract-core-simd.wasm",   // WASM served from /public
+    logger: m => console.log("🪵", m),       // progress in Vercel logs
   };
 
+  // cast because outdated d.ts accepts only strings
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const worker = await createWorker(opts as any);
+  const worker: any = await createWorker(opts as any);
 
-  await worker.loadLanguage("eng");
+  await worker.loadLanguage("eng");          // worker is 'any', so TS allows this
   await worker.initialize("eng");
   return worker;
 })();
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
 
     const buffer = Buffer.from(imageBase64, "base64");
-    const worker = await workerPromise;              // reuse across warm calls
+    const worker: any = await workerPromise;            // reuse across warm calls
     const { data } = await worker.recognize(buffer);
 
     console.log("✅ Extracted text:", data.text.trim().slice(0, 60));
