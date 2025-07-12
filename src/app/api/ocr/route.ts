@@ -1,18 +1,18 @@
-export const runtime = "nodejs"; // use full Node runtime
+export const runtime = "nodejs";          // use full Node runtime
 
 import { NextRequest, NextResponse } from "next/server";
 import { createWorker, type WorkerParams } from "tesseract.js";
 
-// ---- Typed worker options ---------------------------------
-type WorkerOpts = WorkerParams & {
-  corePath: string;   // not in upstream d.ts – we add it
+/** Allow only the props we actually set */
+type WorkerOpts = Partial<WorkerParams> & {
+  corePath: string;
   logger: (m: unknown) => void;
 };
 
 const workerPromise = (async () => {
   const opts: WorkerOpts = {
-    corePath: "/tesseract-core-simd.wasm",
-    logger: m => console.log("🪵", m),
+    corePath: "/tesseract-core-simd.wasm",        // served from /public
+    logger: m => console.log("🪵", m),            // progress in Vercel logs
   };
 
   const worker = await createWorker(opts);
@@ -20,14 +20,12 @@ const workerPromise = (async () => {
   await worker.initialize("eng");
   return worker;
 })();
-// -----------------------------------------------------------
 
 export async function POST(req: NextRequest) {
   console.log("✅ OCR route hit");
 
   try {
     const { imageBase64 } = await req.json();
-
     if (!imageBase64) {
       return NextResponse.json({ error: "Missing imageBase64" }, { status: 400 });
     }
@@ -39,9 +37,9 @@ export async function POST(req: NextRequest) {
     console.log("✅ Extracted text:", data.text.trim().slice(0, 60));
     return NextResponse.json({ text: data.text });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error("❌ OCR Error:", msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("❌ OCR error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
