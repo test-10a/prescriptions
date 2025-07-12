@@ -52,7 +52,7 @@ export default function Home() {
       console.log("🧾 OCR result:", extractedText);
       alert("🎉 OCR result:\n\n" + extractedText);
 
-      // ✅ Encode the extracted text for use in the URL
+      // ✅ URL encode the full text to be safe
       const encodedText = encodeURIComponent(extractedText);
       const endpoint = `https://us-central1-zawya-83b19.cloudfunctions.net/submit?text=${encodedText}`;
 
@@ -66,15 +66,16 @@ export default function Home() {
         },
       });
 
+      const responseBody = await response.text();
+
       if (!response.ok) {
-        throw new Error(`GET request failed: ${response.status}`);
+        throw new Error(`Request failed: ${response.status} - ${responseBody}`);
       }
 
-      const body = await response.text();
-      console.log("✅ Server responded with:", body);
+      console.log("✅ Server responded with:", responseBody);
     } catch (err) {
-      console.error("❌ OCR or GET request failed:", err);
-      alert("❌ Failed to send GET request. See console for details.");
+      console.error("❌ OCR or request failed:", err);
+      alert("❌ Something went wrong sending to backend. See console for details.");
     }
   };
 
