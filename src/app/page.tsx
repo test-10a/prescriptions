@@ -29,6 +29,41 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleOCR = async () => {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (!fileInput?.files?.[0]) {
+      alert("Please upload a .png file first.");
+      return;
+    }
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async () => {
+      const base64 = (reader.result as string).split(",")[1];
+
+      try {
+        const res = await fetch("/api/ocr", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64: base64 }),
+        });
+
+        const json = await res.json();
+
+        if (res.ok) {
+          alert("🎉 Congratulations! Your file was converted to text:\n\n" + json.text);
+        } else {
+          alert("❌ Error: " + json.error);
+        }
+      } catch (err) {
+        alert("❌ Failed to reach the OCR API.");
+      }
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 to-white px-4 sm:px-8 py-10">
       <div className="max-w-2xl mx-auto text-center">
@@ -65,7 +100,7 @@ export default function Home() {
         {/* Upload Form */}
         <Card className="shadow-lg">
           <CardContent className="p-6">
-            <form className="flex flex-col gap-4">
+            <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
               <label className="text-left text-sm font-medium text-gray-700">
                 Upload Your Prescription (.png):
               </label>
@@ -77,17 +112,13 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* OCR Tool Link */}
-        <div className="mt-6">
-          <a
-            href="https://github.com/YOUR_USERNAME/ocr-prescription-tool"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline text-blue-600 hover:text-blue-800"
-          >
-            Go to OCR Tool (.png to .txt Python Script)
-          </a>
-        </div>
+        {/* OCR Trigger Button */}
+        <Button
+          onClick={handleOCR}
+          className="mt-6 text-lg py-3 bg-green-600 hover:bg-green-700"
+        >
+          🧠 Convert .png to .txt via OCR
+        </Button>
 
         {/* Footer */}
         <footer className="mt-12 text-center text-sm text-gray-500">
