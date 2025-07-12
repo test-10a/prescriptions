@@ -26,9 +26,11 @@ export async function POST(req: NextRequest) {
 
     console.log("✅ Extracted text:", text);
     return NextResponse.json({ text });
-  } catch (error: any) {
-    console.error("❌ OCR Error:", error?.message || error);
-    return NextResponse.json({ error: error?.message || "OCR failed" }, { status: 500 });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error("❌ OCR Error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
