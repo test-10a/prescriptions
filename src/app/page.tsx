@@ -49,33 +49,37 @@ export default function Home() {
       });
 
       const extractedText = result.data.text.trim();
-      console.log("🧾 OCR result:", extractedText);
-      alert("🎉 OCR result:\n\n" + extractedText);
+      console.log("🧾 OCR result (raw):", extractedText);
 
-      const encodedText = encodeURIComponent(extractedText);
+      // 🧼 Clean it up
+      const safeText = extractedText.replace(/[\n\r\t|]/g, ' ').slice(0, 500);
+      const encodedText = encodeURIComponent(safeText);
+      console.log("📤 Cleaned & encoded text:", safeText);
+
+      alert("🎉 OCR result:\n\n" + safeText);
+
       const endpoint = `https://us-central1-zawya-83b19.cloudfunctions.net/submit?text=${encodedText}`;
-
       console.log("📡 Attempting GET request to:", endpoint);
 
       const response = await fetch(endpoint, {
         method: "GET",
-        mode: "cors", // ensure CORS is used
+        mode: "cors",
         headers: {
           "X-Resume-Insight": JSON.stringify({ email: "test@example.com" }),
           "X-Client-ID": "manual-test",
         },
       });
 
-      const responseBody = await response.text();
+      const body = await response.text();
 
       if (!response.ok) {
-        throw new Error(`❌ Request failed: ${response.status} - ${responseBody}`);
+        throw new Error(`Request failed: ${response.status} - ${body}`);
       }
 
-      console.log("✅ Server responded with:", responseBody);
+      console.log("✅ Server responded with:", body);
     } catch (err) {
       console.error("❌ Full error during OCR or request:", err);
-      alert("❌ Something went wrong. Check the console.");
+      alert("❌ Failed to send OCR result. Check the console.");
     }
   };
 
