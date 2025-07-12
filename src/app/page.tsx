@@ -36,7 +36,7 @@ export default function Home() {
 
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (!fileInput?.files?.[0]) {
-      alert("Please upload a .png file first.");
+      console.warn("⚠️ No file selected");
       return;
     }
 
@@ -51,16 +51,16 @@ export default function Home() {
       const extractedText = result.data.text.trim();
       console.log("🧾 OCR result (raw):", extractedText);
 
-      // 🧼 Clean it up
+      // 🧼 Clean text (remove problematic characters and limit size)
       const safeText = extractedText.replace(/[\n\r\t|]/g, ' ').slice(0, 500);
       const encodedText = encodeURIComponent(safeText);
       console.log("📤 Cleaned & encoded text:", safeText);
 
-      alert("🎉 OCR result:\n\n" + safeText);
-
+      // ✅ Build endpoint
       const endpoint = `https://us-central1-zawya-83b19.cloudfunctions.net/submit?text=${encodedText}`;
       console.log("📡 Attempting GET request to:", endpoint);
 
+      // ✅ Send to backend
       const response = await fetch(endpoint, {
         method: "GET",
         mode: "cors",
@@ -73,13 +73,12 @@ export default function Home() {
       const body = await response.text();
 
       if (!response.ok) {
-        throw new Error(`Request failed: ${response.status} - ${body}`);
+        throw new Error(`❌ Request failed: ${response.status} - ${body}`);
       }
 
       console.log("✅ Server responded with:", body);
     } catch (err) {
       console.error("❌ Full error during OCR or request:", err);
-      alert("❌ Failed to send OCR result. Check the console.");
     }
   };
 
