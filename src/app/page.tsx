@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Tesseract from "tesseract.js"; // ✅ Added for client-side OCR
 
 const testimonials = [
   "John (52): This website has helped me save 30% on my monthly prescription costs!",
@@ -40,40 +41,19 @@ export default function Home() {
     }
 
     const file = fileInput.files[0];
-    const reader = new FileReader();
+    console.log("📁 Selected file:", file.name);
 
-    reader.onload = async () => {
-      const base64 = (reader.result as string).split(",")[1];
+    try {
+      const result = await Tesseract.recognize(file, 'eng', {
+        logger: m => console.log("🪵 Progress:", m),
+      });
 
-      console.log("📸 Image base64 starts with:", base64.substring(0, 30));
-
-      try {
-        const res = await fetch("/api/ocr", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageBase64: base64 }),
-        });
-
-        const json = await res.json();
-
-        console.log("🧾 OCR response:", json);
-
-        if (res.ok) {
-          if (json.text?.trim()) {
-            alert("🎉 Congratulations! Your file was converted to text:\n\n" + json.text);
-          } else {
-            alert("✅ OCR completed, but no readable text was found.");
-          }
-        } else {
-          alert("❌ Error: " + json.error);
-        }
-      } catch (err) {
-        console.error("❌ Fetch error:", err);
-        alert("❌ Failed to reach the OCR API.");
-      }
-    };
-
-    reader.readAsDataURL(file);
+      console.log("🧾 OCR result:", result.data.text);
+      alert("🎉 OCR result:\n\n" + result.data.text);
+    } catch (err) {
+      console.error("❌ OCR failed:", err);
+      alert("❌ OCR failed. See console for details.");
+    }
   };
 
   return (
