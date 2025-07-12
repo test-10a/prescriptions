@@ -1,28 +1,28 @@
-export const runtime = "nodejs";             // run in full Node runtime
+export const runtime = "nodejs";          // full Node runtime
 
 import { NextRequest, NextResponse } from "next/server";
 import { createWorker, type WorkerParams } from "tesseract.js";
 
-/** -------- Worker set‑up (typed) -------------------------------- */
+/* ---------- worker setup ------------------------------------------------ */
 type WorkerOpts = Partial<WorkerParams> & {
-  corePath: string;               // extra keys we really use
+  corePath: string;
   logger: (m: unknown) => void;
 };
 
 const workerPromise = (async () => {
   const opts: WorkerOpts = {
-    corePath: "/tesseract-core-simd.wasm",   // ← WASM lives in /public
+    corePath: "/tesseract-core-simd.wasm",   // served from /public
     logger: m => console.log("🪵", m),
   };
 
-  // cast to any so outdated d.ts doesn’t complain
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const worker = await createWorker(opts as any);
 
   await worker.loadLanguage("eng");
   await worker.initialize("eng");
   return worker;
 })();
-/** --------------------------------------------------------------- */
+/* ------------------------------------------------------------------------ */
 
 export async function POST(req: NextRequest) {
   console.log("✅ OCR route hit");
