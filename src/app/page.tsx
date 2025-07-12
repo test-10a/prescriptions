@@ -52,14 +52,14 @@ export default function Home() {
       console.log("🧾 OCR result:", extractedText);
       alert("🎉 OCR result:\n\n" + extractedText);
 
-      // ✅ URL encode the full text to be safe
       const encodedText = encodeURIComponent(extractedText);
       const endpoint = `https://us-central1-zawya-83b19.cloudfunctions.net/submit?text=${encodedText}`;
 
-      console.log("📡 Sending GET request to:", endpoint);
+      console.log("📡 Attempting GET request to:", endpoint);
 
       const response = await fetch(endpoint, {
         method: "GET",
+        mode: "cors", // ensure CORS is used
         headers: {
           "X-Resume-Insight": JSON.stringify({ email: "test@example.com" }),
           "X-Client-ID": "manual-test",
@@ -69,13 +69,13 @@ export default function Home() {
       const responseBody = await response.text();
 
       if (!response.ok) {
-        throw new Error(`Request failed: ${response.status} - ${responseBody}`);
+        throw new Error(`❌ Request failed: ${response.status} - ${responseBody}`);
       }
 
       console.log("✅ Server responded with:", responseBody);
     } catch (err) {
-      console.error("❌ OCR or request failed:", err);
-      alert("❌ Something went wrong sending to backend. See console for details.");
+      console.error("❌ Full error during OCR or request:", err);
+      alert("❌ Something went wrong. Check the console.");
     }
   };
 
