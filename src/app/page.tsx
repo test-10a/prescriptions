@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import Image from "next/image"; // ✅ added
+import Image from "next/image";
 
 const testimonials = [
   "John (52): This website has helped me save 30% on my monthly prescription costs!",
@@ -53,7 +53,13 @@ export default function Home() {
         const json = await res.json();
 
         if (res.ok) {
-          alert("🎉 Congratulations! Your file was converted to text:\n\n" + json.text);
+          console.log("OCR response:", json); // 🔍 add this line
+
+          if (json.text?.trim()) {
+            alert("🎉 Congratulations! Your file was converted to text:\n\n" + json.text);
+          } else {
+            alert("✅ OCR completed, but no readable text was found.");
+          }
         } else {
           alert("❌ Error: " + json.error);
         }
@@ -69,7 +75,6 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-sky-100 to-white px-4 sm:px-8 py-10">
       <div className="max-w-2xl mx-auto text-center">
 
-        {/* Logo - now using optimized <Image /> */}
         <Image
           src="/logo.png"
           alt="Logo"
@@ -78,7 +83,6 @@ export default function Home() {
           className="mx-auto mb-4"
         />
 
-        {/* Heading */}
         <h1 className="text-4xl font-bold mb-4 text-gray-900">
           Save Money on Your Prescriptions!
         </h1>
@@ -88,7 +92,6 @@ export default function Home() {
           Upload your prescriptions for instant price comparisons!
         </p>
 
-        {/* Testimonials */}
         <motion.div
           key={testimonialIndex}
           className="text-base italic text-gray-700 mb-6"
@@ -99,12 +102,10 @@ export default function Home() {
           {testimonials[testimonialIndex]}
         </motion.div>
 
-        {/* Trust Badge Row */}
         <div className="text-sm text-gray-600 mb-6">
           🔒 HIPAA-compliant & Secure • 📦 Trusted by 1,200+ users • 🧠 AI-powered analysis
         </div>
 
-        {/* Upload Form */}
         <Card className="shadow-lg">
           <CardContent className="p-6">
             <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
@@ -119,7 +120,6 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* OCR Trigger Button */}
         <Button
           onClick={handleOCR}
           className="mt-6 text-lg py-3 bg-green-600 hover:bg-green-700"
@@ -127,7 +127,6 @@ export default function Home() {
           🧠 Convert .png to .txt via OCR
         </Button>
 
-        {/* Footer */}
         <footer className="mt-12 text-center text-sm text-gray-500">
           &copy; 2025 SaveMoneyOnYourMeds. All rights reserved. •{" "}
           <a href="#" className="underline">Privacy</a> •{" "}
