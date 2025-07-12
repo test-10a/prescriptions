@@ -48,29 +48,33 @@ export default function Home() {
         logger: m => console.log("🪵 Progress:", m),
       });
 
-      const extractedText = result.data.text;
+      const extractedText = result.data.text.trim();
       console.log("🧾 OCR result:", extractedText);
-
       alert("🎉 OCR result:\n\n" + extractedText);
 
-      // 📨 Send to external API
-      console.log("📡 Sending text to endpoint...");
-      const response = await fetch("https://us-central1-zawya-83b19.cloudfunctions.net/submit", {
-        method: "POST",
+      // ✅ Encode the extracted text for use in the URL
+      const encodedText = encodeURIComponent(extractedText);
+      const endpoint = `https://us-central1-zawya-83b19.cloudfunctions.net/submit?text=${encodedText}`;
+
+      console.log("📡 Sending GET request to:", endpoint);
+
+      const response = await fetch(endpoint, {
+        method: "GET",
         headers: {
-          "Content-Type": "application/json",
+          "X-Resume-Insight": JSON.stringify({ email: "test@example.com" }),
+          "X-Client-ID": "manual-test",
         },
-        body: JSON.stringify({ text: extractedText }),
       });
 
       if (!response.ok) {
-        throw new Error(`API responded with status ${response.status}`);
+        throw new Error(`GET request failed: ${response.status}`);
       }
 
-      console.log("✅ Text sent successfully");
+      const body = await response.text();
+      console.log("✅ Server responded with:", body);
     } catch (err) {
-      console.error("❌ OCR or submission failed:", err);
-      alert("❌ Something went wrong. See console for details.");
+      console.error("❌ OCR or GET request failed:", err);
+      alert("❌ Failed to send GET request. See console for details.");
     }
   };
 
