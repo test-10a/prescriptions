@@ -1,8 +1,8 @@
-export const runtime = "nodejs";
+export const runtime = "nodejs"; // Make sure Vercel uses the Node.js runtime
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   console.log("✅ Reached OCR route test");
 
   return NextResponse.json({
