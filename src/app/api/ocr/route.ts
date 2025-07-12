@@ -1,3 +1,5 @@
+export const runtime = "nodejs"; // ✅ Required for tesseract.js to work
+
 import { NextRequest, NextResponse } from "next/server";
 import Tesseract from "tesseract.js";
 
